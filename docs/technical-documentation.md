@@ -525,7 +525,7 @@ powinny istnieć testy dla kluczowych funkcji.
 11. Architektura logiczna backendu
 
 Proponowana struktura:
-
+```text
 backend/
 ├── src/
 │   ├── app.js
@@ -549,7 +549,7 @@ backend/
 ├── prisma/
 ├── tests/
 └── package.json
-
+```
 Warstwy backendu
 
 routes – definicja endpointów,
@@ -567,7 +567,7 @@ utils – funkcje pomocnicze.
 12. Architektura logiczna frontendu
 
 Proponowana struktura:
-
+```text
 frontend/
 ├── src/
 │   ├── app/
@@ -588,7 +588,7 @@ frontend/
 │   ├── utils/
 │   └── styles/
 └── package.json
-
+```
 Główne widoki
 
 HomePage
@@ -1178,7 +1178,7 @@ zaawansowane raporty biznesowe,
 wielojęzyczność.
 
 24. Wstępna struktura repozytorium
-
+```text
 cosmetic-salon-system/
 ├── frontend/
 ├── backend/
@@ -1192,7 +1192,7 @@ cosmetic-salon-system/
 ├── .env.example
 ├── docker-compose.yml
 └── README.md
-
+```
 25. Podsumowanie
 
 Projekt stanowi pełny system rezerwacji i zarządzania salonami kosmetycznymi w architekturze klient–serwer. Zakłada obsługę wielu salonów, rejestrację użytkowników, role i uprawnienia, zarządzanie personelem, usługami, kalendarzem wizyt, galerią, opiniami i dashboardem właściciela. Zastosowanie React, Express i PostgreSQL pozwala stworzyć nowoczesny, skalowalny i dobrze testowalny projekt edukacyjny z dużym potencjałem dalszego rozwoju.
