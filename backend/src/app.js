@@ -1,6 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const prisma = require("./lib/prisma");
+const routes = require("./routes");
 
 const app = express();
 
@@ -23,4 +24,5 @@ app.get("/health", async (req, res) => {
   }
 });
 
+app.use("/api", routes);
 module.exports = app;
