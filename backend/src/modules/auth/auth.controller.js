@@ -2,7 +2,7 @@ const { registerUser, loginUser } = require("./auth.service")
 
 const register = async(req, res) =>{
     try{
-        const{firstName,lastName,email,password} = req.body;
+        const{firstName,lastName,email,password} = req.body || {};
 
         if(!firstName || !lastName || !email ||!password){
             return res.status(400).json({
@@ -24,7 +24,7 @@ const register = async(req, res) =>{
 
 const login = async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { email, password } = req.body || {};
 
     if (!email || !password) {
       return res.status(400).json({

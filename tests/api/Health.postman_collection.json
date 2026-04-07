@@ -1,0 +1,68 @@
+{
+  "info": {
+    "_postman_id": "9683fe04-33cd-4e30-ace3-758398cabd26",
+    "name": "Health",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "38720783",
+    "_collection_link": "https://go.postman.co/collection/38720783-9683fe04-33cd-4e30-ace3-758398cabd26?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "Health",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test(\"Response time is below 1000 ms\", function () {",
+              "    pm.expect(pm.response.responseTime).to.be.below(1000);",
+              "});",
+              "",
+              "pm.test(\"Response is JSON\", function () {",
+              "    pm.response.to.be.json;",
+              "});",
+              "",
+              "pm.test('Message equals \"API is working\"', function () {",
+              "    const jsonData = pm.response.json();",
+              "    pm.expect(jsonData.message).to.eql(\"API is working\");",
+              "});",
+              "",
+              "pm.test('Database status equals \"connected\"', function () {",
+              "    const jsonData = pm.response.json();",
+              "    pm.expect(jsonData.database).to.eql(\"connected\");",
+              "});",
+              "",
+              "pm.test(\"Response has required fields\", function () {",
+              "    const jsonData = pm.response.json();",
+              "    pm.expect(jsonData).to.have.property(\"message\");",
+              "    pm.expect(jsonData).to.have.property(\"database\");",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/health",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "health"
+          ]
+        },
+        "description": "Checks whether the API is running and confirms database connectivity.\n\nExpected result:\n\n- HTTP 200\n    \n- response time below 1000 ms\n    \n- response is JSON\n    \n- message = \"API is working\"\n    \n- database = \"connected\""
+      },
+      "response": []
+    }
+  ]
+}

@@ -1,0 +1,1054 @@
+{
+  "info": {
+    "_postman_id": "003f7e74-b451-41bc-b15a-58b88fc907eb",
+    "name": "AUTH",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "38720783",
+    "_collection_link": "https://go.postman.co/collection/38720783-003f7e74-b451-41bc-b15a-58b88fc907eb?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "Register",
+      "item": [
+        {
+          "name": "Positive",
+          "item": [
+            {
+              "name": "Register user with valid data",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 201\", function () {",
+                      "    pm.response.to.have.status(201);",
+                      "});",
+                      "",
+                      "pm.test(\"Response is JSON\", function () {",
+                      "    pm.response.to.be.json;",
+                      "});",
+                      "",
+                      "pm.test(\"Response time is below 1000 ms\", function () {",
+                      "    pm.expect(pm.response.responseTime).to.be.below(1000);",
+                      "});",
+                      "",
+                      "const jsonData = pm.response.json();",
+                      "",
+                      "pm.test(\"Response contains success message\", function () {",
+                      "    pm.expect(jsonData.message).to.eql(\"User register successfully\");",
+                      "});",
+                      "",
+                      "pm.test(\"Response contains user object\", function () {",
+                      "    pm.expect(jsonData).to.have.property(\"user\");",
+                      "});",
+                      "",
+                      "pm.test(\"User object contains required fields\", function () {",
+                      "    pm.expect(jsonData.user).to.have.property(\"id\");",
+                      "    pm.expect(jsonData.user).to.have.property(\"firstName\");",
+                      "    pm.expect(jsonData.user).to.have.property(\"lastName\");",
+                      "    pm.expect(jsonData.user).to.have.property(\"email\");",
+                      "    pm.expect(jsonData.user).to.have.property(\"role\");",
+                      "    pm.expect(jsonData.user).to.have.property(\"createdAt\");",
+                      "});",
+                      "",
+                      "pm.test(\"Returned user data is correct\", function () {",
+                      "    pm.expect(jsonData.user.firstName).to.eql(pm.collectionVariables.get(\"registerFirstName\"));",
+                      "    pm.expect(jsonData.user.lastName).to.eql(pm.collectionVariables.get(\"registerLastName\"));",
+                      "    pm.expect(jsonData.user.email).to.eql(pm.collectionVariables.get(\"registerEmail\"));",
+                      "    pm.expect(jsonData.user.role).to.eql(\"CLIENT\");",
+                      "});",
+                      "",
+                      "pm.test(\"Response does not expose password hash\", function () {",
+                      "    pm.expect(jsonData.user).to.not.have.property(\"passwordHash\");",
+                      "});",
+                      "",
+                      "pm.test(\"User id is not empty\", function () {",
+                      "    pm.expect(jsonData.user.id).to.not.be.empty;",
+                      "});",
+                      "",
+                      "pm.collectionVariables.set(\"loginEmail\", jsonData.user.email);",
+                      "pm.collectionVariables.set(\"loginPassword\", pm.collectionVariables.get(\"registerPassword\"));"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                },
+                {
+                  "listen": "prerequest",
+                  "script": {
+                    "exec": [
+                      "const uniqueId = Date.now();",
+                      "const testEmail = `dominik.test.${uniqueId}@example.com`;",
+                      "",
+                      "pm.collectionVariables.set(\"registerEmail\", testEmail);",
+                      "pm.collectionVariables.set(\"registerFirstName\", \"Dominik\");",
+                      "pm.collectionVariables.set(\"registerLastName\", \"Bernas\");",
+                      "pm.collectionVariables.set(\"registerPassword\", \"Test1234!\");"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"firstName\": \"{{registerFirstName}}\",\n  \"lastName\": \"{{registerLastName}}\",\n  \"email\": \"{{registerEmail}}\",\n  \"password\": \"{{registerPassword}}\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{apiUrl}}/auth/register",
+                  "host": [
+                    "{{apiUrl}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "register"
+                  ]
+                },
+                "description": "Creates a new user account with valid registration data.\n\nExpected result:\n\n\\- HTTP 201\n\n\\- response contains success message\n\n\\- response contains created user data\n\n\\- response does not expose passwordHash\n\n\\- user role is set to CLIENT"
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Negative",
+          "item": [
+            {
+              "name": "Register user without email",
+              "event": [
+                {
+                  "listen": "prerequest",
+                  "script": {
+                    "exec": [
+                      "const uniqueId = Date.now();",
+                      "",
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                },
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 400\", function () {",
+                      "    pm.response.to.have.status(400);",
+                      "});",
+                      "",
+                      "pm.test(\"Response is JSON\", function () {",
+                      "    pm.response.to.be.json;",
+                      "});",
+                      "",
+                      "pm.test(\"Response time is below 1000 ms\", function () {",
+                      "    pm.expect(pm.response.responseTime).to.be.below(1000);",
+                      "});",
+                      "",
+                      "const jsonData = pm.response.json();",
+                      "",
+                      "pm.test(\"Response contains validation message\", function () {",
+                      "    pm.expect(jsonData).to.have.property(\"message\");",
+                      "    pm.expect(jsonData.message.toLowerCase()).to.include(\"required\");",
+                      "});",
+                      "",
+                      "pm.test(\"Response does not contain user object\", function () {",
+                      "    pm.expect(jsonData).to.not.have.property(\"user\");",
+                      "});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"firstName\": \"{{registerFirstName}}\",\n  \"lastName\": \"{{registerLastName}}\",\n  \"password\": \"{{registerPassword}}\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{apiUrl}}/auth/register",
+                  "host": [
+                    "{{apiUrl}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "register"
+                  ]
+                },
+                "description": "Attempts to register a new user without the email field.\n\nExpected result:\n\n\\- HTTP 400\n\n\\- response contains validation error message\n\n\\- user is not created"
+              },
+              "response": []
+            },
+            {
+              "name": "Register user without password",
+              "event": [
+                {
+                  "listen": "prerequest",
+                  "script": {
+                    "exec": [
+                      "const uniqueId = Date.now();",
+                      "",
+                      "pm.collectionVariables.set(\"registerFirstName\", \"Dominik\");",
+                      "pm.collectionVariables.set(\"registerLastName\", \"Bernas\");",
+                      "pm.collectionVariables.set(\"registerEmail\", `dominik.test.${uniqueId}@example.com`);"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                },
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 400\", function () {",
+                      "    pm.response.to.have.status(400);",
+                      "});",
+                      "",
+                      "pm.test(\"Response is JSON\", function () {",
+                      "    pm.response.to.be.json;",
+                      "});",
+                      "",
+                      "pm.test(\"Response time is below 1000 ms\", function () {",
+                      "    pm.expect(pm.response.responseTime).to.be.below(1000);",
+                      "});",
+                      "",
+                      "const jsonData = pm.response.json();",
+                      "",
+                      "pm.test(\"Response contains validation message\", function () {",
+                      "    pm.expect(jsonData).to.have.property(\"message\");",
+                      "    pm.expect(jsonData.message.toLowerCase()).to.include(\"required\");",
+                      "});",
+                      "",
+                      "pm.test(\"Response does not contain user object\", function () {",
+                      "    pm.expect(jsonData).to.not.have.property(\"user\");",
+                      "});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"firstName\": \"{{registerFirstName}}\",\n  \"lastName\": \"{{registerLastName}}\",\n  \"email\": \"{{registerEmail}}\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{apiUrl}}/auth/register",
+                  "host": [
+                    "{{apiUrl}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "register"
+                  ]
+                },
+                "description": "Attempts to register a new user without the password field.\n\nExpected result:\n\n- HTTP 400\n    \n- response contains validation error message\n    \n- user is not created"
+              },
+              "response": []
+            },
+            {
+              "name": "Register user with empty request body",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 400\", function () {",
+                      "    pm.response.to.have.status(400);",
+                      "});",
+                      "",
+                      "pm.test(\"Response is JSON\", function () {",
+                      "    pm.response.to.be.json;",
+                      "});",
+                      "",
+                      "pm.test(\"Response time is below 1000 ms\", function () {",
+                      "    pm.expect(pm.response.responseTime).to.be.below(1000);",
+                      "});",
+                      "",
+                      "const jsonData = pm.response.json();",
+                      "",
+                      "pm.test(\"Response contains validation message\", function () {",
+                      "    pm.expect(jsonData).to.have.property(\"message\");",
+                      "    pm.expect(jsonData.message.toLowerCase()).to.include(\"required\");",
+                      "});",
+                      "",
+                      "pm.test(\"Response does not contain user object\", function () {",
+                      "    pm.expect(jsonData).to.not.have.property(\"user\");",
+                      "});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{apiUrl}}/auth/register",
+                  "host": [
+                    "{{apiUrl}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "register"
+                  ]
+                },
+                "description": "Attempts to register a new user with an empty request body.\n\nExpected result:\n\n- HTTP 400\n    \n- response contains validation error message\n    \n- user is not created"
+              },
+              "response": []
+            },
+            {
+              "name": "Register user with invalid data format",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Response status is client error\", function () {",
+                      "    pm.expect(pm.response.code).to.be.oneOf([400, 500]);",
+                      "});",
+                      "",
+                      "pm.test(\"Response is JSON\", function () {",
+                      "    pm.response.to.be.json;",
+                      "});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"firstName\": 123,\n  \"lastName\": true,\n  \"email\": \"not-an-email\",\n  \"password\": 456\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{apiUrl}}/auth/register",
+                  "host": [
+                    "{{apiUrl}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "register"
+                  ]
+                },
+                "description": "Attempts to register a new user with invalid data types or malformed field values.\n\nExpected result:\n\n- HTTP 400\n    \n- response contains validation error message\n    \n- user is not created"
+              },
+              "response": []
+            },
+            {
+              "name": "Register user with duplicate email",
+              "event": [
+                {
+                  "listen": "prerequest",
+                  "script": {
+                    "exec": [
+                      "pm.collectionVariables.set(\"duplicateFirstName\", \"Dominik\");",
+                      "pm.collectionVariables.set(\"duplicateLastName\", \"Bernas\");",
+                      "pm.collectionVariables.set(\"duplicateEmail\", \"duplicate.user@example.com\");",
+                      "pm.collectionVariables.set(\"duplicatePassword\", \"Test1234!\");"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                },
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 400\", function () {",
+                      "    pm.response.to.have.status(400);",
+                      "});",
+                      "",
+                      "pm.test(\"Response is JSON\", function () {",
+                      "    pm.response.to.be.json;",
+                      "});",
+                      "",
+                      "pm.test(\"Response time is below 1000 ms\", function () {",
+                      "    pm.expect(pm.response.responseTime).to.be.below(1000);",
+                      "});",
+                      "",
+                      "const jsonData = pm.response.json();",
+                      "",
+                      "pm.test(\"Response contains error message\", function () {",
+                      "    pm.expect(jsonData).to.have.property(\"message\");",
+                      "    pm.expect(jsonData.message.toLowerCase()).to.include(\"already exists\");",
+                      "});",
+                      "",
+                      "pm.test(\"Response does not contain user object\", function () {",
+                      "    pm.expect(jsonData).to.not.have.property(\"user\");",
+                      "});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"firstName\": \"{{duplicateFirstName}}\",\n  \"lastName\": \"{{duplicateLastName}}\",\n  \"email\": \"{{duplicateEmail}}\",\n  \"password\": \"{{duplicatePassword}}\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{apiUrl}}/auth/register",
+                  "host": [
+                    "{{apiUrl}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "register"
+                  ]
+                },
+                "description": "Attempts to register a new user using an email address that already exists in the system.\n\nExpected result:\n\n- HTTP 400\n    \n- response contains error message about existing user\n    \n- duplicate user is not created"
+              },
+              "response": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Login",
+      "item": [
+        {
+          "name": "Positive",
+          "item": [
+            {
+              "name": "Login user successfully with valid credentials",
+              "event": [
+                {
+                  "listen": "prerequest",
+                  "script": {
+                    "exec": [
+                      "if (!pm.collectionVariables.get(\"loginEmail\")) {",
+                      "    throw new Error(\"Missing collection variable: loginEmail\");",
+                      "}",
+                      "",
+                      "if (!pm.collectionVariables.get(\"loginPassword\")) {",
+                      "    throw new Error(\"Missing collection variable: loginPassword\");",
+                      "}"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                },
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () {",
+                      "    pm.response.to.have.status(200);",
+                      "});",
+                      "",
+                      "pm.test(\"Response is JSON\", function () {",
+                      "    pm.response.to.be.json;",
+                      "});",
+                      "",
+                      "pm.test(\"Response time is below 1000 ms\", function () {",
+                      "    pm.expect(pm.response.responseTime).to.be.below(1000);",
+                      "});",
+                      "",
+                      "const jsonData = pm.response.json();",
+                      "",
+                      "pm.test(\"Response contains success message\", function () {",
+                      "    pm.expect(jsonData).to.have.property(\"message\");",
+                      "    pm.expect(jsonData.message).to.eql(\"Login successful\");",
+                      "});",
+                      "",
+                      "pm.test(\"Response contains token\", function () {",
+                      "    pm.expect(jsonData).to.have.property(\"token\");",
+                      "    pm.expect(jsonData.token).to.be.a(\"string\");",
+                      "    pm.expect(jsonData.token.length).to.be.above(10);",
+                      "});",
+                      "",
+                      "pm.test(\"Response contains user object\", function () {",
+                      "    pm.expect(jsonData).to.have.property(\"user\");",
+                      "});",
+                      "",
+                      "pm.test(\"User object contains required fields\", function () {",
+                      "    pm.expect(jsonData.user).to.have.property(\"id\");",
+                      "    pm.expect(jsonData.user).to.have.property(\"firstName\");",
+                      "    pm.expect(jsonData.user).to.have.property(\"lastName\");",
+                      "    pm.expect(jsonData.user).to.have.property(\"email\");",
+                      "    pm.expect(jsonData.user).to.have.property(\"role\");",
+                      "});",
+                      "",
+                      "pm.test(\"Returned user data is correct\", function () {",
+                      "    pm.expect(jsonData.user.email).to.eql(pm.collectionVariables.get(\"loginEmail\"));",
+                      "    pm.expect(jsonData.user.role).to.eql(\"CLIENT\");",
+                      "});",
+                      "",
+                      "pm.test(\"Response does not expose password hash\", function () {",
+                      "    pm.expect(jsonData.user).to.not.have.property(\"passwordHash\");",
+                      "});",
+                      "",
+                      "pm.collectionVariables.set(\"authToken\", jsonData.token);",
+                      "pm.collectionVariables.set(\"currentUserId\", jsonData.user.id);",
+                      "pm.collectionVariables.set(\"currentUserEmail\", jsonData.user.email);"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"email\": \"{{loginEmail}}\",\n  \"password\": \"{{loginPassword}}\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/auth/login",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "auth",
+                    "login"
+                  ]
+                },
+                "description": "Logs in an existing user with valid credentials.\n\nExpected result:\n\n- HTTP 200\n    \n- response contains success message\n    \n- response contains JWT token\n    \n- response contains logged-in user data\n    \n- token is stored for future authorized request"
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Negative",
+          "item": [
+            {
+              "name": "Should return 400 when email is missing",
+              "event": [
+                {
+                  "listen": "prerequest",
+                  "script": {
+                    "exec": [
+                      "if (!pm.collectionVariables.get(\"loginPassword\")) {",
+                      "    throw new Error(\"Missing collection variable: loginPassword\");",
+                      "}"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                },
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 400\", function () {",
+                      "    pm.response.to.have.status(400);",
+                      "});",
+                      "",
+                      "pm.test(\"Response is JSON\", function () {",
+                      "    pm.response.to.be.json;",
+                      "});",
+                      "",
+                      "pm.test(\"Response time is below 1000 ms\", function () {",
+                      "    pm.expect(pm.response.responseTime).to.be.below(1000);",
+                      "});",
+                      "",
+                      "const jsonData = pm.response.json();",
+                      "",
+                      "pm.test(\"Response contains validation message\", function () {",
+                      "    pm.expect(jsonData).to.have.property(\"message\");",
+                      "    pm.expect(jsonData.message.toLowerCase()).to.include(\"required\");",
+                      "});",
+                      "",
+                      "pm.test(\"Response does not contain token\", function () {",
+                      "    pm.expect(jsonData).to.not.have.property(\"token\");",
+                      "});",
+                      "",
+                      "pm.test(\"Response does not contain user object\", function () {",
+                      "    pm.expect(jsonData).to.not.have.property(\"user\");",
+                      "});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"password\": \"{{loginPassword}}\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/auth/login",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "auth",
+                    "login"
+                  ]
+                },
+                "description": "Attempts to log in without providing the email field.\n\nExpected result:\n\n- HTTP 400\n    \n- response contains validation error message\n    \n- token is not returned\n    \n- user object is not returned"
+              },
+              "response": []
+            },
+            {
+              "name": "Should return 400 when password is missing",
+              "event": [
+                {
+                  "listen": "prerequest",
+                  "script": {
+                    "exec": [
+                      "",
+                      "if (!pm.collectionVariables.get(\"loginPassword\")) {",
+                      "    throw new Error(\"Missing collection variable: loginPassword\");",
+                      "}"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                },
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 400\", function () {",
+                      "    pm.response.to.have.status(400);",
+                      "});",
+                      "",
+                      "pm.test(\"Response is JSON\", function () {",
+                      "    pm.response.to.be.json;",
+                      "});",
+                      "",
+                      "pm.test(\"Response time is below 1000 ms\", function () {",
+                      "    pm.expect(pm.response.responseTime).to.be.below(1000);",
+                      "});",
+                      "",
+                      "const jsonData = pm.response.json();",
+                      "",
+                      "pm.test(\"Response contains validation message\", function () {",
+                      "    pm.expect(jsonData).to.have.property(\"message\");",
+                      "    pm.expect(jsonData.message.toLowerCase()).to.include(\"required\");",
+                      "});",
+                      "",
+                      "pm.test(\"Response does not contain token\", function () {",
+                      "    pm.expect(jsonData).to.not.have.property(\"token\");",
+                      "});",
+                      "",
+                      "pm.test(\"Response does not contain user object\", function () {",
+                      "    pm.expect(jsonData).to.not.have.property(\"user\");",
+                      "});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"email\": \"{{loginEmail}}\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/auth/login",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "auth",
+                    "login"
+                  ]
+                },
+                "description": "Attempts to log in without providing the password field.\n\nExpected result:\n\n- HTTP 400\n    \n- response contains validation error message\n    \n- token is not returned\n    \n- user object is not returned"
+              },
+              "response": []
+            },
+            {
+              "name": "Should return 400 when request body is empty",
+              "event": [
+                {
+                  "listen": "prerequest",
+                  "script": {
+                    "exec": [
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                },
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 400\", function () {",
+                      "    pm.response.to.have.status(400);",
+                      "});",
+                      "",
+                      "pm.test(\"Response is JSON\", function () {",
+                      "    pm.response.to.be.json;",
+                      "});",
+                      "",
+                      "pm.test(\"Response time is below 1000 ms\", function () {",
+                      "    pm.expect(pm.response.responseTime).to.be.below(1000);",
+                      "});",
+                      "",
+                      "const jsonData = pm.response.json();",
+                      "",
+                      "pm.test(\"Response contains validation message\", function () {",
+                      "    pm.expect(jsonData).to.have.property(\"message\");",
+                      "    pm.expect(jsonData.message.toLowerCase()).to.include(\"required\");",
+                      "});",
+                      "",
+                      "pm.test(\"Response does not contain token\", function () {",
+                      "    pm.expect(jsonData).to.not.have.property(\"token\");",
+                      "});",
+                      "",
+                      "pm.test(\"Response does not contain user object\", function () {",
+                      "    pm.expect(jsonData).to.not.have.property(\"user\");",
+                      "});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/auth/login",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "auth",
+                    "login"
+                  ]
+                },
+                "description": "Attempts to log in with an empty request body.\n\nExpected result:\n\n- HTTP 400\n    \n- response contains validation error message\n    \n- token is not returned\n    \n- user object is not returned"
+              },
+              "response": []
+            },
+            {
+              "name": "Should return 400 when password is invalid",
+              "event": [
+                {
+                  "listen": "prerequest",
+                  "script": {
+                    "exec": [
+                      "if (!pm.collectionVariables.get(\"loginEmail\")) {",
+                      "    throw new Error(\"Missing collection variable: loginEmail\");",
+                      "}"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                },
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 400\", function () {",
+                      "    pm.response.to.have.status(400);",
+                      "});",
+                      "",
+                      "pm.test(\"Response is JSON\", function () {",
+                      "    pm.response.to.be.json;",
+                      "});",
+                      "",
+                      "pm.test(\"Response time is below 1000 ms\", function () {",
+                      "    pm.expect(pm.response.responseTime).to.be.below(1000);",
+                      "});",
+                      "",
+                      "const jsonData = pm.response.json();",
+                      "",
+                      "pm.test(\"Response contains authentication error message\", function () {",
+                      "    pm.expect(jsonData).to.have.property(\"message\");",
+                      "    pm.expect(jsonData.message.toLowerCase()).to.include(\"invalid\");",
+                      "});",
+                      "",
+                      "pm.test(\"Response does not contain token\", function () {",
+                      "    pm.expect(jsonData).to.not.have.property(\"token\");",
+                      "});",
+                      "",
+                      "pm.test(\"Response does not contain user object\", function () {",
+                      "    pm.expect(jsonData).to.not.have.property(\"user\");",
+                      "});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"email\": \"{{loginEmail}}\",\n  \"password\": \"WrongPassword123!\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/auth/login",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "auth",
+                    "login"
+                  ]
+                },
+                "description": "Attempts to log in with a valid email address and an incorrect password.\n\nExpected result:\n\n- HTTP 400\n    \n- response contains authentication error message\n    \n- token is not returned\n    \n- user object is not returned"
+              },
+              "response": []
+            },
+            {
+              "name": "Should return 400 when user does not exist",
+              "event": [
+                {
+                  "listen": "prerequest",
+                  "script": {
+                    "exec": [
+                      "const uniqueId = Date.now();",
+                      "pm.collectionVariables.set(\"nonExistingEmail\", `not.exists.${uniqueId}@example.com`);",
+                      "",
+                      "if (!pm.collectionVariables.get(\"loginPassword\")) {",
+                      "    throw new Error(\"Missing collection variable: loginPassword\");",
+                      "}"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                },
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 400\", function () {",
+                      "    pm.response.to.have.status(400);",
+                      "});",
+                      "",
+                      "pm.test(\"Response is JSON\", function () {",
+                      "    pm.response.to.be.json;",
+                      "});",
+                      "",
+                      "pm.test(\"Response time is below 1000 ms\", function () {",
+                      "    pm.expect(pm.response.responseTime).to.be.below(1000);",
+                      "});",
+                      "",
+                      "const jsonData = pm.response.json();",
+                      "",
+                      "pm.test(\"Response contains authentication error message\", function () {",
+                      "    pm.expect(jsonData).to.have.property(\"message\");",
+                      "    pm.expect(jsonData.message.toLowerCase()).to.include(\"invalid\");",
+                      "});",
+                      "",
+                      "pm.test(\"Response does not contain token\", function () {",
+                      "    pm.expect(jsonData).to.not.have.property(\"token\");",
+                      "});",
+                      "",
+                      "pm.test(\"Response does not contain user object\", function () {",
+                      "    pm.expect(jsonData).to.not.have.property(\"user\");",
+                      "});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"email\": \"{{nonExistingEmail}}\",\n  \"password\": \"{{loginPassword}}\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/auth/login",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "auth",
+                    "login"
+                  ]
+                },
+                "description": "Attempts to log in using an email address that does not exist in the system.\n\nExpected result:\n\n- HTTP 400\n    \n- response contains authentication error message\n    \n- token is not returned\n    \n- user object is not returned"
+              },
+              "response": []
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "registerEmail",
+      "value": ""
+    },
+    {
+      "key": "registerFirstName",
+      "value": ""
+    },
+    {
+      "key": "registerLastName",
+      "value": ""
+    },
+    {
+      "key": "registerPassword",
+      "value": ""
+    },
+    {
+      "key": "loginEmail",
+      "value": ""
+    },
+    {
+      "key": "loginPassword",
+      "value": ""
+    },
+    {
+      "key": "registerInvalidEmail",
+      "value": ""
+    },
+    {
+      "key": "duplicateFirstName",
+      "value": ""
+    },
+    {
+      "key": "duplicateLastName",
+      "value": ""
+    },
+    {
+      "key": "duplicateEmail",
+      "value": ""
+    },
+    {
+      "key": "duplicatePassword",
+      "value": ""
+    },
+    {
+      "key": "authToken",
+      "value": ""
+    },
+    {
+      "key": "currentUserId",
+      "value": ""
+    },
+    {
+      "key": "currentUserEmail",
+      "value": ""
+    },
+    {
+      "key": "nonExistingEmail",
+      "value": ""
+    }
+  ]
+}
