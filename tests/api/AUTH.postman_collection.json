@@ -987,6 +987,227 @@
           ]
         }
       ]
+    },
+    {
+      "name": "Authorization",
+      "item": [
+        {
+          "name": "Positive",
+          "item": [
+            {
+              "name": "Should return 200 for authenticated user",
+              "event": [
+                {
+                  "listen": "prerequest",
+                  "script": {
+                    "exec": [
+                      "if (!pm.collectionVariables.get(\"authToken\")) {",
+                      "    throw new Error(\"Missing collection variable: authToken\");",
+                      "}"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                },
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () {",
+                      "    pm.response.to.have.status(200);",
+                      "});",
+                      "",
+                      "pm.test(\"Response is JSON\", function () {",
+                      "    pm.response.to.be.json;",
+                      "});",
+                      "",
+                      "pm.test(\"Response time is below 1000 ms\", function () {",
+                      "    pm.expect(pm.response.responseTime).to.be.below(1000);",
+                      "});",
+                      "",
+                      "const jsonData = pm.response.json();",
+                      "",
+                      "pm.test(\"Response contains success message\", function () {",
+                      "    pm.expect(jsonData).to.have.property(\"message\");",
+                      "    pm.expect(jsonData.message).to.eql(\"User fetched successfully\");",
+                      "});",
+                      "",
+                      "pm.test(\"Response contains user object\", function () {",
+                      "    pm.expect(jsonData).to.have.property(\"user\");",
+                      "});",
+                      "",
+                      "pm.test(\"User object contains required fields\", function () {",
+                      "    pm.expect(jsonData.user).to.have.property(\"id\");",
+                      "    pm.expect(jsonData.user).to.have.property(\"firstName\");",
+                      "    pm.expect(jsonData.user).to.have.property(\"lastName\");",
+                      "    pm.expect(jsonData.user).to.have.property(\"email\");",
+                      "    pm.expect(jsonData.user).to.have.property(\"role\");",
+                      "    pm.expect(jsonData.user).to.have.property(\"isActive\");",
+                      "    pm.expect(jsonData.user).to.have.property(\"createdAt\");",
+                      "    pm.expect(jsonData.user).to.have.property(\"updatedAt\");",
+                      "});",
+                      "",
+                      "pm.test(\"Returned user email matches logged user\", function () {",
+                      "    pm.expect(jsonData.user.email).to.eql(pm.collectionVariables.get(\"currentUserEmail\"));",
+                      "});",
+                      "",
+                      "pm.test(\"Response does not expose password hash\", function () {",
+                      "    pm.expect(jsonData.user).to.not.have.property(\"passwordHash\");",
+                      "});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{authToken}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/api/users/me",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "users",
+                    "me"
+                  ]
+                },
+                "description": "Returns data of the currently authenticated user.\n\nExpected result:\n\n- HTTP 200\n    \n- response contains success message\n    \n- response contains authenticated user data\n    \n- response does not expose passwordHash"
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Negative",
+          "item": [
+            {
+              "name": "Should return 401 when token is missing",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 401\", function () {",
+                      "    pm.response.to.have.status(401);",
+                      "});",
+                      "",
+                      "pm.test(\"Response is JSON\", function () {",
+                      "    pm.response.to.be.json;",
+                      "});",
+                      "",
+                      "const jsonData = pm.response.json();",
+                      "",
+                      "pm.test(\"Response contains authorization error message\", function () {",
+                      "    pm.expect(jsonData).to.have.property(\"message\");",
+                      "    pm.expect(jsonData.message.toLowerCase()).to.include(\"authorization\");",
+                      "});",
+                      "",
+                      "pm.test(\"Response does not contain user object\", function () {",
+                      "    pm.expect(jsonData).to.not.have.property(\"user\");",
+                      "});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/api/users/me",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "users",
+                    "me"
+                  ]
+                },
+                "description": "Attempts to access the authenticated user endpoint without an authorization token.\n\nExpected result:\n\n- HTTP 401\n    \n- response contains authorization error message\n    \n- user object is not returned"
+              },
+              "response": []
+            },
+            {
+              "name": "Should return 401 when token is invalid",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 401\", function () {",
+                      "    pm.response.to.have.status(401);",
+                      "});",
+                      "",
+                      "pm.test(\"Response is JSON\", function () {",
+                      "    pm.response.to.be.json;",
+                      "});",
+                      "",
+                      "const jsonData = pm.response.json();",
+                      "",
+                      "pm.test(\"Response contains token error message\", function () {",
+                      "    pm.expect(jsonData).to.have.property(\"message\");",
+                      "    pm.expect(jsonData.message.toLowerCase()).to.include(\"token\");",
+                      "});",
+                      "",
+                      "pm.test(\"Response does not contain user object\", function () {",
+                      "    pm.expect(jsonData).to.not.have.property(\"user\");",
+                      "});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "Bearer invalid_token_value",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/api/users/me",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "users",
+                    "me"
+                  ]
+                },
+                "description": "Attempts to access the authenticated user endpoint with an invalid token.\n\nExpected result:\n\n- HTTP 401\n    \n- response contains token error message\n    \n- user object is not returned"
+              },
+              "response": []
+            }
+          ]
+        }
+      ]
     }
   ],
   "variable": [
