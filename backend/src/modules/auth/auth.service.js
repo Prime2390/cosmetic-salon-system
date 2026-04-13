@@ -40,13 +40,13 @@ const loginUser = async ({ email, password }) => {
   });
 
   if (!user) {
-    throw new Error("Invalid email or password");
+    throw new Error("Invalid email");
   }
 
   const isPasswordValid = await bcrypt.compare(password, user.passwordHash);
 
   if (!isPasswordValid) {
-    throw new Error("Invalid email or password");
+    throw new Error("Invalid password");
   }
 
   if (!user.isActive) {
